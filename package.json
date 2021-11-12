@@ -1,0 +1,85 @@
+{
+  "name": "nono",
+  "description": "ノノ -- A fluent API for triggering UI events in TypeScript",
+  "version": "0.1",
+  "author": "Arnaud Blouin",
+  "contributors": [
+    "Rémi Daniel"
+  ],
+  "keywords": [
+    "event processing",
+    "user interaction",
+    "user interface",
+    "ui",
+    "front-end",
+    "framework",
+    "typescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/interacto/nono/issues"
+  },
+  "homepage": "https://github.com/interacto/nono",
+  "repository": "https://github.com/interacto/nono.git",
+  "license": "GPL-3.0",
+  "main": "./dist/nono.umd.js",
+  "module": "dist/nono.es5.js",
+  "types": "./dist/nono.d.ts",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^15.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^15.6.1",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "barrelsby": "^2.2.0",
+    "eslint": "^7.27.0",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-tsdoc": "^0.2.14",
+    "jest": "^27.0.2",
+    "jest-mock-extended": "^1.0.15",
+    "rollup": "^2.28.1",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-typescript2": "^0.27.2",
+    "ts-jest": "^27.0.7",
+    "typedoc": "^0.21.0",
+    "typescript": "^4.3.4"
+  },
+  "scripts": {
+    "package": "npm run pre-build && npm run build && npm run doc",
+    "build": "rollup -c",
+    "generate-barrels": "barrelsby -c ./barrelsby-config.json --delete",
+    "compile": "tsc",
+    "compile-test": "tsc -p tsconfig4tests.json",
+    "pre-build": "npm run clean && npm run generate-barrels && npm run lint && npm run compile",
+    "clean": "(rm -rf dist out-test)",
+    "clean-all": "npm run clean && (rm -rf reports docs)",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "lint-fix": "eslint src --ext .ts --fix",
+    "coverage": "jest --coverage --collectCoverageFrom=src*/**/*.ts --coverageDirectory reports",
+    "doc": "typedoc --theme minimal --out docs src/interacto.ts",
+    "test-publish": "npm pack",
+    "gen-changelog": "git log --pretty=\"* %s\" $(git describe --tags --abbrev=0 @^)..@ | sort > commits"
+  },
+  "files": [
+    "dist/"
+  ],
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testEnvironment": "jsdom",
+    "coverageReporters": [
+      "lcov",
+      "cobertura",
+      "clover"
+    ],
+    "testRegex": "(.*\\.)(test|spec)\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
+  }
+}
