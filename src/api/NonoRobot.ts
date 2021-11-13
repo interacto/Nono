@@ -16,9 +16,9 @@ import type {EventTargetInit} from "./EventTargetInit";
 
 export interface NonoRobot {
     mousedown(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
-    click(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
+    click(params?: EventTarget | (EventTargetInit & MouseEventInit), count?: number): this;
     dblclick(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
-    auxclick(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
+    auxclick(params?: EventTarget | (EventTargetInit & MouseEventInit), count?: number): this;
     mousemove(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
     mouseup(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;
     mouseover(params?: EventTarget | (EventTargetInit & MouseEventInit)): this;

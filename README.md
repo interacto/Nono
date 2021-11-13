@@ -134,6 +134,18 @@ robot(elt)
     .touchmove({}, [{"identifier": 1, "target": elt}]);
 ```
 
+```ts
+robot(canvas)
+    .auxclick({"button": 2}, 2);
+```
+
+```ts
+robot()
+    .click(canvas, 2)
+    .mousemove()
+    .keydown({"code": "27"});
+```
+
 ## Augmenting the API with its own routines
 
 You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).

@@ -109,16 +109,22 @@ export class NonoRobotImpl implements NonoRobot {
         return this;
     }
 
-    public click(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("click", params);
+    public click(params?: EventTarget | (EventTargetInit & MouseEventInit), count: number = 1): this {
+        for (let i = 0; i < count; i++) {
+            this.processMouseEvent("click", params);
+        }
+        return this;
     }
 
     public dblclick(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
         return this.processMouseEvent("dblclick", params);
     }
 
-    public auxclick(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("auxclick", params);
+    public auxclick(params?: EventTarget | (EventTargetInit & MouseEventInit), count: number = 1): this {
+        for (let i = 0; i < count; i++) {
+            this.processMouseEvent("auxclick", params);
+        }
+        return this;
     }
 
     public mousemove(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
