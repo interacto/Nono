@@ -124,3 +124,12 @@ robot()
     .wheel({"target": canvas, "button": 1, "screenX": 111, "screenY": 222, "clientX": 11, "clientY": 22,
     "deltaX": 18, "deltaY": 19, "deltaZ": 20, "deltaMode": 21});
 ```
+
+```ts
+robot(elt)
+    .touchstart({}, [{"identifier": 1, "target": elt}])
+    .touchmove({}, [{"identifier": 1, "target": elt}])
+    .touchend({}, [{"identifier": 1, "target": elt}])
+    .touchstart({}, [{"identifier": 1, "target": elt}])
+    .touchmove({}, [{"identifier": 1, "target": elt}]);
+```
