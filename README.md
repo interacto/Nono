@@ -136,25 +136,39 @@ robot(elt)
 
 ## Augmenting the API with its own routines
 
-Easy, thanks to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
-Following, an example that adds `runOnlyPendingTimers` to the API.
+You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
+
+Or you can extends the Nono robot. An example for `Jest`:
 
 ```ts
-declare module "interacto-nono" {
-    interface NonoRobot {
-        runOnlyPendingTimers(): NonoRobot;
+export interface JestNonoRobot {
+    runOnlyPendingTimers(): this;
+
+    runAllTimers(): this;
+}
+
+class JestNonoRobotImpl extends NonoRobotImpl implements JestNonoRobot {
+    public constructor(target?: EventTarget) {
+        super(target);
+    }
+
+    public runOnlyPendingTimers(): this {
+        jest.runOnlyPendingTimers();
+        return this;
+    }
+
+    public runAllTimers(): this {
+        jest.runAllTimers();
+        return this;
     }
 }
 
-NonoRobotImpl.prototype.runOnlyPendingTimers = function (): NonoRobot {
-    jest.runOnlyPendingTimers();
-    return this;
-};
+export function robot(target?: EventTarget): JestNonoRobot & NonoRobot {
+    return new JestNonoRobotImpl(target);
+}
 ```
 
-You may have to add various comments to remove linter warnings.
-
-I can now write:
+Using this robot we can now write:
 
 ```ts
 robot(canvas)
