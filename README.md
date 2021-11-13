@@ -133,3 +133,31 @@ robot(elt)
     .touchstart({}, [{"identifier": 1, "target": elt}])
     .touchmove({}, [{"identifier": 1, "target": elt}]);
 ```
+
+## Augmenting the API with its own routines
+
+Easy, thanks to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
+Following, an example that adds `runOnlyPendingTimers` to the API.
+
+```ts
+declare module "interacto-nono" {
+    interface NonoRobot {
+        runOnlyPendingTimers(): NonoRobot;
+    }
+}
+
+NonoRobotImpl.prototype.runOnlyPendingTimers = function (): NonoRobot {
+    jest.runOnlyPendingTimers();
+    return this;
+};
+```
+
+You may have to add various comments to remove linter warnings.
+
+I can now write:
+
+```ts
+robot(canvas)
+    .mousedown()
+    .runOnlyPendingTimers();
+```

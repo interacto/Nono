@@ -14,7 +14,7 @@
 import type {NonoRobot} from "../api/NonoRobot";
 import type {EventTargetInit} from "../api/EventTargetInit";
 
-class NonoRobotImpl implements NonoRobot {
+export class NonoRobotImpl implements NonoRobot {
     private currentTarget: EventTarget | undefined;
 
     public constructor(target?: EventTarget) {
