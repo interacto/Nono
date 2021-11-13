@@ -1,5 +1,5 @@
 {
-  "name": "nono",
+  "name": "interacto-nono",
   "description": "ノノ -- A fluent API for triggering UI events in TypeScript",
   "version": "0.1",
   "author": "Arnaud Blouin",
