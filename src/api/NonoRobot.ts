@@ -163,4 +163,25 @@ export interface NonoRobot {
      * @returns the robot (itself)
      */
     do(fn: () => void): this;
+
+    /**
+     * After this function call, event data of the same type will be reused from a first event to the next one.
+     * For example: `robot().keepData().mousedown({"button": 1}).mousemove();` The event `mousemove` will
+     * reuse the previous MouseEventInit object, so it will move with button 1.
+     * This is useful not to repeat data.
+     * If `robot().keepData().mousedown({"button": 1}).mousemove({"button": 2});`, the `mousemove` will use button 2.
+     * If `robot().keepData().mousedown({"clientX": 11, "clientY": 23, "button": 1})`
+     *   `.mousemove({"clientX": 20, "clientY": 25});`, then the button will be the same but the properties
+     *   `clientX` and `clientY` will be replaced for `mousemove`.
+     * To stop keeping data, use `flushData`.
+     * The default behavior of the API is not to keep data. Note that the EventTarget is not concerned by this method:
+     * the robot always keeps it through the different API routine calls, never mind `keepdata` or `flushData`.
+     */
+    keepData(): this;
+
+    /**
+     * Related to `keepData`. Does not reuse event data along the API routine calls. This is the default behavior
+     * of the API. Does not concern the EvenTarget object.
+     */
+    flushData(): this;
 }

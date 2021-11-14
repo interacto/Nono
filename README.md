@@ -146,6 +146,32 @@ robot()
     .keydown({"code": "27"});
 ```
 
+```ts
+robot(canvas)
+    .keepData()
+    .mousedown({"screenX": 1, "screenY": 2, "clientX": 11, "clientY": 23, "button": 0})
+    .mousemove({"screenX": 3, "screenY": 4, "clientX": 15, "clientY": 25})
+    .mouseup();
+```
+
+```ts
+robot(text)
+    .keydown({"code": "A"})
+    .keepData()
+    .keydown({"code": "B"})
+    .keyup();
+```
+
+```ts
+robot(elt)
+    .keepData()
+    .touchstart({}, [{"identifier": 1, "target": elt}])
+    .touchmove()
+    .touchend()
+    .touchstart()
+    .touchmove();
+```
+
 ## Augmenting the API with its own routines
 
 You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).

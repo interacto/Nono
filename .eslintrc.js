@@ -19,7 +19,7 @@ module.exports = {
   overrides: [
     {
       files: [
-        "test/**/*.test.ts"
+        "test/**/*.ts"
       ],
       env: {
         jest: true
@@ -61,6 +61,7 @@ module.exports = {
 
     "tsdoc/syntax": "error",
 
+    "object-property-newline": "off",
     "func-style": "off",
     "max-lines": "off",
     "prefer-destructuring": "off",

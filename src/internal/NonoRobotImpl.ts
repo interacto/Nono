@@ -15,9 +15,26 @@ import type {NonoRobot} from "../api/NonoRobot";
 import type {EventTargetInit} from "../api/EventTargetInit";
 
 export class NonoRobotImpl implements NonoRobot {
+    private keepEventData: boolean;
+
     private currentTarget: EventTarget | undefined;
 
+    private currentMouseData: MouseEventInit | undefined;
+
+    private currentKeyboardData: KeyboardEventInit | undefined;
+
+    private currentWheelData: WheelEventInit | undefined;
+
+    private currentUIEventData: UIEventInit | undefined;
+
+    private currentInputEventData: InputEventInit | undefined;
+
+    private currentChangeData: EventInit | undefined;
+
+    private currentTouchData: TouchEventInit | undefined;
+
     public constructor(target?: EventTarget) {
+        this.keepEventData = false;
         this.currentTarget = target;
     }
 
@@ -54,25 +71,52 @@ export class NonoRobotImpl implements NonoRobot {
     private processMouseEvent(type: "auxclick" | "click" | "dblclick" | "mousedown" | "mouseenter" | "mouseleave" |
     "mousemove" | "mouseout" | "mouseover" | "mouseup",
                               params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new MouseEvent(type, this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentMouseData !== undefined) {
+                parameters = {...this.currentMouseData, ...parameters};
+            }
+            this.currentMouseData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new MouseEvent(type, parameters));
         return this;
     }
 
     private processWheelEvent(type: "wheel",
                               params?: EventTarget | (EventTargetInit & WheelEventInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new WheelEvent(type, this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentWheelData !== undefined) {
+                parameters = {...this.currentWheelData, ...parameters};
+            }
+            this.currentWheelData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new WheelEvent(type, parameters));
         return this;
     }
 
     private processKeyEvent(type: "keydown" | "keyup", params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new KeyboardEvent(type, this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentKeyboardData !== undefined) {
+                parameters = {...this.currentKeyboardData, ...parameters};
+            }
+            this.currentKeyboardData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new KeyboardEvent(type, parameters));
         return this;
     }
 
     private processTouchEvent(type: "touchend" | "touchmove" | "touchstart",
                               params?: EventTarget | (EventTargetInit & TouchEventInit), touchInits?: Array<TouchInit>,
                               timestamp?: number): this {
-        const paramsToUse = this.fixingParameters(params ?? {});
+        let paramsToUse = this.fixingParameters(params ?? {});
         if (touchInits !== undefined && touchInits.length > 0) {
             // eslint-disable-next-line complexity
             const touches: Array<Touch> = touchInits.map(init => ({
@@ -97,6 +141,13 @@ export class NonoRobotImpl implements NonoRobot {
             } else {
                 paramsToUse.changedTouches.push(...touches);
             }
+        }
+
+        if (this.keepEventData) {
+            if (this.currentTouchData !== undefined) {
+                paramsToUse = {...this.currentTouchData, ...paramsToUse};
+            }
+            this.currentTouchData = paramsToUse;
         }
 
         const evt = new TouchEvent(type, paramsToUse);
@@ -160,17 +211,44 @@ export class NonoRobotImpl implements NonoRobot {
     }
 
     public scroll(params?: EventTarget | (EventTargetInit & UIEventInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new UIEvent("scroll", this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentUIEventData !== undefined) {
+                parameters = {...this.currentUIEventData, ...parameters};
+            }
+            this.currentUIEventData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new UIEvent("scroll", parameters));
         return this;
     }
 
     public input(params?: EventTarget | (EventTargetInit & InputEventInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new InputEvent("input", this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentInputEventData !== undefined) {
+                parameters = {...this.currentInputEventData, ...parameters};
+            }
+            this.currentInputEventData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new InputEvent("input", parameters));
         return this;
     }
 
     public change(params?: EventTarget | (EventInit & EventTargetInit)): this {
-        this.checkEventTarget(params).dispatchEvent(new Event("change", this.fixingParameters(params ?? {})));
+        let parameters = this.fixingParameters(params ?? {});
+
+        if (this.keepEventData) {
+            if (this.currentChangeData !== undefined) {
+                parameters = {...this.currentChangeData, ...parameters};
+            }
+            this.currentChangeData = parameters;
+        }
+
+        this.checkEventTarget(params).dispatchEvent(new Event("change", parameters));
         return this;
     }
 
@@ -196,6 +274,22 @@ export class NonoRobotImpl implements NonoRobot {
 
     public do(fn: () => void): this {
         fn();
+        return this;
+    }
+
+    public keepData(): this {
+        this.keepEventData = true;
+        return this;
+    }
+
+    public flushData(): this {
+        this.keepEventData = false;
+        this.currentMouseData = undefined;
+        this.currentInputEventData = undefined;
+        this.currentKeyboardData = undefined;
+        this.currentWheelData = undefined;
+        this.currentUIEventData = undefined;
+        this.currentChangeData = undefined;
         return this;
     }
 }
