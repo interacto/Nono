@@ -200,6 +200,11 @@ export class NonoRobotImpl implements NonoRobot {
     }
 }
 
+/**
+ * Factory method for getting an instance of robot Nono. New instance on each call.
+ * @param target - The object to target. Optional.
+ * @returns A new instance of robot Nono.
+ */
 export function robot(target?: EventTarget): NonoRobot {
     return new NonoRobotImpl(target);
 }

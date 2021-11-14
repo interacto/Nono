@@ -12,6 +12,9 @@
  * along with Interacto.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * An object that has an EvenTarget attribute.
+ */
 export interface EventTargetInit {
     target?: EventTarget;
 }
