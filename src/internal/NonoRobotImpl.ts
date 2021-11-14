@@ -169,7 +169,7 @@ export class NonoRobotImpl implements NonoRobot {
         return this;
     }
 
-    public change(params?: EventTarget | (EventTargetInit & InputEventInit)): this {
+    public change(params?: EventTarget | (EventInit & EventTargetInit)): this {
         this.checkEventTarget(params).dispatchEvent(new Event("change", this.fixingParameters(params ?? {})));
         return this;
     }

@@ -99,7 +99,7 @@ export interface NonoRobot {
      * @param params - The targeted DOM objects or an EventTargetInit object or an event data object
      * @returns the robot (itself)
      */
-    change(params?: EventTarget | (EventTargetInit & InputEventInit)): this;
+    change(params?: EventTarget | (EventInit & EventTargetInit)): this;
 
     /**
      * A keydown DOM keyboard event.
