@@ -174,6 +174,68 @@ describe("robot with default event target", () => {
             }));
         });
     });
+
+    describe("with touch events", () => {
+        let handler: (_: TouchEvent) => void;
+
+        beforeEach(() => {
+            handler = jest.fn();
+            div.addEventListener("touchmove", handler);
+        });
+
+        test("merges touch init data", () => {
+            robot
+                .keepData()
+                .touchmove({},
+                    [{"screenX": 170, "screenY": 30, "clientX": 161, "clientY": 202, "identifier": 2}])
+                .touchmove({},
+                    [{"screenX": 450, "screenY": 30, "clientX": 500, "clientY": 210}]);
+
+            expect(handler).toHaveBeenCalledTimes(2);
+            expect(handler).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "isTrusted": false,
+                "changedTouches": [
+                    {
+                        "altitudeAngle": 0,
+                        "azimuthAngle": 0,
+                        "identifier": 2,
+                        "screenX": 170,
+                        "screenY": 30,
+                        "clientX": 161,
+                        "clientY": 202,
+                        "force": 0,
+                        "pageX": 0,
+                        "pageY": 0,
+                        "radiusX": 0,
+                        "radiusY": 0,
+                        "rotationAngle": 0,
+                        "target": div,
+                        "touchType": "direct"
+                    }
+                ]
+            }));
+            expect(handler).toHaveBeenNthCalledWith(2, expect.objectContaining({
+                "isTrusted": false,
+                "changedTouches": [
+                    {
+                        "altitudeAngle": 0,
+                        "azimuthAngle": 0,
+                        "identifier": 2,
+                        "screenX": 450,
+                        "screenY": 30,
+                        "clientX": 500,
+                        "clientY": 210,
+                        "force": 0,
+                        "pageX": 0,
+                        "pageY": 0,
+                        "radiusX": 0,
+                        "radiusY": 0,
+                        "rotationAngle": 0,
+                        "target": div,
+                        "touchType": "direct"
+                    }
+                ]
+            }));
+        });
+    });
 });
-
-

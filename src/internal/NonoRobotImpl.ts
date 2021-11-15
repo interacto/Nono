@@ -14,6 +14,10 @@
 import type {NonoRobot} from "../api/NonoRobot";
 import type {EventTargetInit} from "../api/EventTargetInit";
 
+interface PartialTouchEventInit extends EventModifierInit {
+    changedTouches?: Array<Partial<TouchInit>>;
+}
+
 export class NonoRobotImpl implements NonoRobot {
     private keepEventData: boolean;
 
@@ -31,7 +35,7 @@ export class NonoRobotImpl implements NonoRobot {
 
     private currentChangeData: EventInit | undefined;
 
-    private currentTouchData: TouchEventInit | undefined;
+    private currentTouchData: PartialTouchEventInit | undefined;
 
     public constructor(target?: EventTarget) {
         this.keepEventData = false;
@@ -114,43 +118,19 @@ export class NonoRobotImpl implements NonoRobot {
     }
 
     private processTouchEvent(type: "touchend" | "touchmove" | "touchstart",
-                              params?: EventTarget | (EventTargetInit & TouchEventInit), touchInits?: Array<TouchInit>,
+                              params?: EventTarget | (EventTargetInit & PartialTouchEventInit), touchInits?: Array<Partial<TouchInit>>,
                               timestamp?: number): this {
-        let paramsToUse = this.fixingParameters(params ?? {});
-        if (touchInits !== undefined && touchInits.length > 0) {
-            // eslint-disable-next-line complexity
-            const touches: Array<Touch> = touchInits.map(init => ({
-                "altitudeAngle": init.altitudeAngle ?? 0,
-                "azimuthAngle": init.azimuthAngle ?? 0,
-                "identifier": init.identifier,
-                "screenX": init.screenX ?? 0,
-                "screenY": init.screenY ?? 0,
-                "clientX": init.clientX ?? 0,
-                "clientY": init.clientY ?? 0,
-                "force": init.force ?? 0,
-                "pageX": init.pageX ?? 0,
-                "pageY": init.pageY ?? 0,
-                "radiusX": init.radiusX ?? 0,
-                "radiusY": init.radiusY ?? 0,
-                "rotationAngle": init.rotationAngle ?? 0,
-                "target": this.checkEventTarget(params),
-                "touchType": init.touchType ?? "direct"
-            } as Touch));
+        const paramsToUse = this.fixingParameters(params ?? {});
+
+        if (touchInits !== undefined) {
             if (paramsToUse.changedTouches === undefined) {
-                paramsToUse.changedTouches = touches;
+                paramsToUse.changedTouches = touchInits;
             } else {
-                paramsToUse.changedTouches.push(...touches);
+                paramsToUse.changedTouches.push(...touchInits);
             }
         }
 
-        if (this.keepEventData) {
-            if (this.currentTouchData !== undefined) {
-                paramsToUse = {...this.currentTouchData, ...paramsToUse};
-            }
-            this.currentTouchData = paramsToUse;
-        }
-
-        const evt = new TouchEvent(type, paramsToUse);
+        const evt = new TouchEvent(type, this.fixingTouchParameters(paramsToUse, this.checkEventTarget(params)));
 
         if (timestamp !== undefined) {
             Object.defineProperty(evt, "timeStamp", {"value": timestamp});
@@ -158,6 +138,52 @@ export class NonoRobotImpl implements NonoRobot {
 
         this.checkEventTarget(params).dispatchEvent(evt);
         return this;
+    }
+
+
+    private fixingTouchParameters(paramsToUse: EventTargetInit & PartialTouchEventInit, tgt: EventTarget): TouchEventInit {
+        let params = paramsToUse;
+
+        if (this.keepEventData) {
+            if (this.currentTouchData !== undefined) {
+                params = {...this.currentTouchData, ...params};
+
+                if (this.currentTouchData.changedTouches === undefined) {
+                    params.changedTouches = undefined;
+                } else {
+                    const max = Math.max(this.currentTouchData.changedTouches.length, params.changedTouches?.length ?? 0);
+                    const touches: Array<Partial<TouchInit>> = [];
+
+                    for (let i = 0; i < max; i++) {
+                        touches.push({...this.currentTouchData.changedTouches[0], ...params.changedTouches?.[0]});
+                    }
+
+                    params.changedTouches = touches;
+                }
+            }
+            this.currentTouchData = params;
+        }
+
+        // eslint-disable-next-line complexity
+        params.changedTouches = params.changedTouches?.map(init => ({
+            "altitudeAngle": init.altitudeAngle ?? 0,
+            "azimuthAngle": init.azimuthAngle ?? 0,
+            "identifier": init.identifier ?? -1,
+            "screenX": init.screenX ?? 0,
+            "screenY": init.screenY ?? 0,
+            "clientX": init.clientX ?? 0,
+            "clientY": init.clientY ?? 0,
+            "force": init.force ?? 0,
+            "pageX": init.pageX ?? 0,
+            "pageY": init.pageY ?? 0,
+            "radiusX": init.radiusX ?? 0,
+            "radiusY": init.radiusY ?? 0,
+            "rotationAngle": init.rotationAngle ?? 0,
+            "target": tgt,
+            "touchType": init.touchType ?? "direct"
+        } as Touch));
+
+        return params as TouchEventInit;
     }
 
     public click(params?: EventTarget | (EventTargetInit & MouseEventInit), count: number = 1): this {
@@ -260,15 +286,15 @@ export class NonoRobotImpl implements NonoRobot {
         return this.processKeyEvent("keyup", params);
     }
 
-    public touchstart(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this {
+    public touchstart(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
         return this.processTouchEvent("touchstart", params, touches, timestamp);
     }
 
-    public touchmove(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this {
+    public touchmove(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
         return this.processTouchEvent("touchmove", params, touches, timestamp);
     }
 
-    public touchend(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this {
+    public touchend(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
         return this.processTouchEvent("touchend", params, touches, timestamp);
     }
 

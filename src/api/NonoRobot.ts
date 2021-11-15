@@ -136,7 +136,7 @@ export interface NonoRobot {
      * @param timestamp - The timestamp to use for this event
      * @returns the robot (itself)
      */
-    touchstart(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this;
+    touchstart(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this;
 
     /**
      * A touchmove DOM touch event.
@@ -145,7 +145,7 @@ export interface NonoRobot {
      * @param timestamp - The timestamp to use for this event
      * @returns the robot (itself)
      */
-    touchmove(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this;
+    touchmove(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this;
 
     /**
      * A touchend DOM touch event.
@@ -154,7 +154,7 @@ export interface NonoRobot {
      * @param timestamp - The timestamp to use for this event
      * @returns the robot (itself)
      */
-    touchend(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<TouchInit>, timestamp?: number): this;
+    touchend(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this;
 
     /**
      * A free routine that executes the provided function. Useful to execute something while not stopping the

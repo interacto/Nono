@@ -172,6 +172,15 @@ robot(elt)
     .touchmove();
 ```
 
+```ts
+robot(c1)
+    .keepData()
+    .touchstart({}, [{"screenX": 3, "screenY": 20, "clientX": 150, "clientY": 200, "identifier": 3, "target": c1}])
+    .touchmove({}, [{"screenX": 16, "screenY": 21, "clientX": 160, "clientY": 201}])
+    .touchmove({}, [{"screenX": 20, "screenY": 25, "clientX": 200, "clientY": 205}])
+    .touchend({}, [{"screenX": 65, "screenY": 25, "clientX": 200, "clientY": 205}]);
+```
+
 ## Augmenting the API with its own routines
 
 You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
