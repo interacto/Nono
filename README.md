@@ -185,7 +185,7 @@ robot(c1)
 
 You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
 
-Or you can extends the Nono robot. An example for `Jest`:
+Or you can extend the Nono robot. An example for `Jest`:
 
 ```ts
 export interface JestNonoRobot {
