@@ -10,7 +10,7 @@ Nono (ノノ), a fluent TypeScript API for triggering UI events. Helpful for tes
 
 # Installation
 
-`npm install interacto-nono`
+`npm install --save-dev interacto-nono`
 
 # Usage
 
