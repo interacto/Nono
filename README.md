@@ -181,7 +181,7 @@ robot(c1)
     .touchend({}, [{"screenX": 65, "screenY": 25, "clientX": 200, "clientY": 205}]);
 ```
 
-## Augmenting the API with its own routines
+## Augmenting the API with own routines
 
 You can take a look to [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation).
 
