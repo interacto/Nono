@@ -5,7 +5,7 @@ It's me ノノ small robot you know, friends of user interfaces.
 
 
 
-Nono (ノノ), a fluent TypeScript API for triggering UI events. Helpful for testing UIs.
+Nono (ノノ), a fluent TypeScript API for triggering UI events. Helpful for testing front-ends.
 
 
 # Installation
@@ -21,6 +21,16 @@ Some examples. More to come
 
 ```ts
 robot(div)
+  .click();
+```
+
+```ts
+robot()
+  .click(div);
+```
+
+```ts
+robot("#mydiv")
   .click();
 ```
 

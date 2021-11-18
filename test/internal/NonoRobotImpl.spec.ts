@@ -2,8 +2,8 @@ import type {NonoRobot} from "../../src/nono";
 import {NonoRobotImpl} from "../../src/nono";
 
 let robot: NonoRobot;
-let div: EventTarget;
-let div2: EventTarget;
+let div: Element;
+let div2: Element;
 
 describe("robot with default event target", () => {
     beforeEach(() => {
@@ -432,5 +432,42 @@ describe("robot with default event target", () => {
                 ]
             }));
         });
+    });
+});
+
+
+describe("robot using css selector", () => {
+    let handler: (_: MouseEvent) => void;
+
+    beforeEach(() => {
+        document.documentElement.innerHTML = "<html><div id='myid'></div></html>";
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        div = document.querySelector("div")!;
+        handler = jest.fn();
+        div.addEventListener("click", handler);
+    });
+
+    test("with a tag name", () => {
+        robot = new NonoRobotImpl("div");
+
+        robot.click();
+
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    test("with an id", () => {
+        robot = new NonoRobotImpl("#myid");
+
+        robot.click();
+
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    test("with an id in click routine", () => {
+        robot = new NonoRobotImpl();
+
+        robot.click("#myid");
+
+        expect(handler).toHaveBeenCalledTimes(1);
     });
 });

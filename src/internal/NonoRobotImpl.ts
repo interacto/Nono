@@ -41,10 +41,26 @@ export class NonoRobotImpl implements NonoRobot {
 
     private readonly ongoingtouchevents: Map<EventTarget, Map<number, Touch>>;
 
-    public constructor(target?: EventTarget) {
+    public constructor(target?: EventTarget | string) {
         this.keepEventData = false;
-        this.currentTarget = target;
         this.ongoingtouchevents = new Map<EventTarget, Map<number, Touch>>();
+
+        if (typeof target === "string") {
+            const res = document.querySelector(target);
+            this.currentTarget = res instanceof EventTarget ? res : undefined;
+        } else {
+            this.currentTarget = target;
+        }
+    }
+
+    private processPotentialCssSelector<T>(target?: EventTarget | string | (EventTargetInit & T)):
+    EventTarget | (EventTargetInit & T) | undefined {
+        if (typeof target === "string") {
+            const res = document.querySelector(target);
+            return res instanceof EventTarget ? res : undefined;
+        }
+
+        return target;
     }
 
     private checkEventTarget(target?: EventTarget | EventTargetInit): EventTarget {
@@ -218,58 +234,59 @@ export class NonoRobotImpl implements NonoRobot {
         return params as TouchEventInit;
     }
 
-    public click(params?: EventTarget | (EventTargetInit & MouseEventInit), count: number = 1): this {
+    public click(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count: number = 1): this {
         for (let i = 0; i < count; i++) {
-            this.processMouseEvent("click", params);
+            this.processMouseEvent("click", this.processPotentialCssSelector(params));
         }
         return this;
     }
 
-    public dblclick(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("dblclick", params);
+    public dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("dblclick", this.processPotentialCssSelector(params));
     }
 
-    public auxclick(params?: EventTarget | (EventTargetInit & MouseEventInit), count: number = 1): this {
+    public auxclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count: number = 1): this {
         for (let i = 0; i < count; i++) {
-            this.processMouseEvent("auxclick", params);
+            this.processMouseEvent("auxclick", this.processPotentialCssSelector(params));
         }
         return this;
     }
 
-    public mousemove(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mousemove", params);
+    public mousemove(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mousemove", this.processPotentialCssSelector(params));
     }
 
-    public mousedown(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mousedown", params);
+    public mousedown(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mousedown", this.processPotentialCssSelector(params));
     }
 
-    public mouseup(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mouseup", params);
+    public mouseup(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mouseup", this.processPotentialCssSelector(params));
     }
 
-    public mouseover(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mouseover", params);
+    public mouseover(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mouseover", this.processPotentialCssSelector(params));
     }
 
-    public mouseout(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mouseout", params);
+    public mouseout(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mouseout", this.processPotentialCssSelector(params));
     }
 
-    public mouseenter(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mouseenter", params);
+    public mouseenter(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mouseenter", this.processPotentialCssSelector(params));
     }
 
-    public mouseleave(params?: EventTarget | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("mouseleave", params);
+    public mouseleave(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
+        return this.processMouseEvent("mouseleave", this.processPotentialCssSelector(params));
     }
 
-    public wheel(params?: EventTarget | (EventTargetInit & WheelEventInit)): this {
-        return this.processWheelEvent("wheel", params);
+    public wheel(params?: EventTarget | string | (EventTargetInit & WheelEventInit)): this {
+        return this.processWheelEvent("wheel", this.processPotentialCssSelector(params));
     }
 
-    public scroll(params?: EventTarget | (EventTargetInit & UIEventInit)): this {
-        let parameters = this.fixingParameters(params ?? {});
+    public scroll(params?: EventTarget | string | (EventTargetInit & UIEventInit)): this {
+        const processedParams = this.processPotentialCssSelector(params);
+        let parameters = this.fixingParameters(processedParams ?? {});
 
         if (this.keepEventData) {
             if (this.currentUIEventData !== undefined) {
@@ -278,12 +295,13 @@ export class NonoRobotImpl implements NonoRobot {
             this.currentUIEventData = parameters;
         }
 
-        this.checkEventTarget(params).dispatchEvent(new UIEvent("scroll", parameters));
+        this.checkEventTarget(processedParams).dispatchEvent(new UIEvent("scroll", parameters));
         return this;
     }
 
-    public input(params?: EventTarget | (EventTargetInit & InputEventInit)): this {
-        let parameters = this.fixingParameters(params ?? {});
+    public input(params?: EventTarget | string | (EventTargetInit & InputEventInit)): this {
+        const processedParams = this.processPotentialCssSelector(params);
+        let parameters = this.fixingParameters(processedParams ?? {});
 
         if (this.keepEventData) {
             if (this.currentInputEventData !== undefined) {
@@ -292,12 +310,13 @@ export class NonoRobotImpl implements NonoRobot {
             this.currentInputEventData = parameters;
         }
 
-        this.checkEventTarget(params).dispatchEvent(new InputEvent("input", parameters));
+        this.checkEventTarget(processedParams).dispatchEvent(new InputEvent("input", parameters));
         return this;
     }
 
-    public change(params?: EventTarget | (EventInit & EventTargetInit)): this {
-        let parameters = this.fixingParameters(params ?? {});
+    public change(params?: EventTarget | string | (EventInit & EventTargetInit)): this {
+        const processedParams = this.processPotentialCssSelector(params);
+        let parameters = this.fixingParameters(processedParams ?? {});
 
         if (this.keepEventData) {
             if (this.currentChangeData !== undefined) {
@@ -306,28 +325,31 @@ export class NonoRobotImpl implements NonoRobot {
             this.currentChangeData = parameters;
         }
 
-        this.checkEventTarget(params).dispatchEvent(new Event("change", parameters));
+        this.checkEventTarget(processedParams).dispatchEvent(new Event("change", parameters));
         return this;
     }
 
-    public keydown(params?: EventTarget | (EventTargetInit & KeyboardEventInit)): this {
-        return this.processKeyEvent("keydown", params);
+    public keydown(params?: EventTarget | string | (EventTargetInit & KeyboardEventInit)): this {
+        return this.processKeyEvent("keydown", this.processPotentialCssSelector(params));
     }
 
-    public keyup(params?: EventTarget | (EventTargetInit & KeyboardEventInit)): this {
-        return this.processKeyEvent("keyup", params);
+    public keyup(params?: EventTarget | string | (EventTargetInit & KeyboardEventInit)): this {
+        return this.processKeyEvent("keyup", this.processPotentialCssSelector(params));
     }
 
-    public touchstart(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
-        return this.processTouchEvent("touchstart", params, touches, timestamp);
+    public touchstart(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                      touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
+        return this.processTouchEvent("touchstart", this.processPotentialCssSelector(params), touches, timestamp);
     }
 
-    public touchmove(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
-        return this.processTouchEvent("touchmove", params, touches, timestamp);
+    public touchmove(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                     touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
+        return this.processTouchEvent("touchmove", this.processPotentialCssSelector(params), touches, timestamp);
     }
 
-    public touchend(params?: EventTarget | (EventTargetInit & TouchEventInit), touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
-        return this.processTouchEvent("touchend", params, touches, timestamp);
+    public touchend(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                    touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
+        return this.processTouchEvent("touchend", this.processPotentialCssSelector(params), touches, timestamp);
     }
 
     public do(fn: () => void): this {
@@ -357,6 +379,6 @@ export class NonoRobotImpl implements NonoRobot {
  * @param target - The object to target. Optional.
  * @returns A new instance of robot Nono.
  */
-export function robot(target?: EventTarget): NonoRobot {
+export function robot(target?: EventTarget | string): NonoRobot {
     return new NonoRobotImpl(target);
 }
