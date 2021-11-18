@@ -177,10 +177,115 @@ describe("robot with default event target", () => {
 
     describe("with touch events", () => {
         let handler: (_: TouchEvent) => void;
+        let handler2: (_: TouchEvent) => void;
 
         beforeEach(() => {
             handler = jest.fn();
+            handler2 = jest.fn();
             div.addEventListener("touchmove", handler);
+            div2.addEventListener("touchmove", handler2);
+        });
+
+        test("targetTouches and touches attribute filled after several touch events", () => {
+            robot
+                .touchmove({}, [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ])
+                .touchmove({}, [
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13}
+                ]);
+
+            expect(handler).toHaveBeenCalledTimes(2);
+
+            expect(handler).toHaveBeenNthCalledWith(2, expect.objectContaining({
+                "touches": [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"},
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13,
+                        "target": div, "touchType": "direct"}
+                ],
+                "targetTouches": [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"},
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13,
+                        "target": div, "touchType": "direct"}
+                ]
+            }));
+        });
+
+        test("targettouch attribute must consider target events only", () => {
+            robot
+                .touchmove(div, [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ])
+                .touchmove(div2, [
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13}
+                ]);
+
+            expect(handler).toHaveBeenCalledTimes(1);
+            expect(handler2).toHaveBeenCalledTimes(1);
+
+            expect(handler).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "touches": [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"}
+                ],
+                "targetTouches": [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"}
+                ]
+            }));
+
+            expect(handler2).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "touches": [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"},
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13,
+                        "target": div, "touchType": "direct"}
+                ],
+                "targetTouches": [
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13,
+                        "target": div, "touchType": "direct"}
+                ]
+            }));
+        });
+
+        test("several touch data in same event", () => {
+            robot
+                .touchmove({}, [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123},
+                    {"identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1, "pageX": 10,
+                        "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60, "altitudeAngle": 12, "azimuthAngle": 13}
+                ]);
+
+            expect(handler).toHaveBeenCalledTimes(1);
+            expect(handler).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "changedTouches": [
+                    {
+                        "identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18,
+                        "pageX": 1, "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64,
+                        "altitudeAngle": 112, "azimuthAngle": 123, "target": div, "touchType": "direct"
+                    }, {
+                        "identifier": 3, "screenX": 160, "screenY": 30, "clientX": 160, "clientY": 201, "force": 1,
+                        "pageX": 10, "pageY": 20, "radiusX": 40, "radiusY": 50, "rotationAngle": 60,
+                        "altitudeAngle": 12, "azimuthAngle": 13, "target": div, "touchType": "direct"
+                    }
+                ]
+            }));
         });
 
         test("touch move data ok", () => {
@@ -253,7 +358,6 @@ describe("robot with default event target", () => {
                 ]
             }));
             expect(handler).toHaveBeenNthCalledWith(2, expect.objectContaining({
-                "isTrusted": false,
                 "changedTouches": [
                     {
                         "altitudeAngle": 120,

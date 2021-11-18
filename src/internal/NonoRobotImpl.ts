@@ -16,6 +16,8 @@ import type {EventTargetInit} from "../api/EventTargetInit";
 
 interface PartialTouchEventInit extends EventModifierInit {
     changedTouches?: Array<Partial<TouchInit>>;
+    targetTouches?: Array<TouchInit>;
+    touches?: Array<TouchInit>;
 }
 
 export class NonoRobotImpl implements NonoRobot {
@@ -37,9 +39,12 @@ export class NonoRobotImpl implements NonoRobot {
 
     private currentTouchData: PartialTouchEventInit | undefined;
 
+    private readonly ongoingtouchevents: Map<EventTarget, Map<number, Touch>>;
+
     public constructor(target?: EventTarget) {
         this.keepEventData = false;
         this.currentTarget = target;
+        this.ongoingtouchevents = new Map<EventTarget, Map<number, Touch>>();
     }
 
     private checkEventTarget(target?: EventTarget | EventTargetInit): EventTarget {
@@ -164,6 +169,13 @@ export class NonoRobotImpl implements NonoRobot {
             this.currentTouchData = params;
         }
 
+        this.creatingTouchEventInit(paramsToUse, tgt);
+
+        return params as TouchEventInit;
+    }
+
+
+    private creatingTouchEventInit(params: EventTargetInit & PartialTouchEventInit, tgt: EventTarget): TouchEventInit {
         // eslint-disable-next-line complexity
         params.changedTouches = params.changedTouches?.map(init => ({
             "altitudeAngle": init.altitudeAngle ?? 0,
@@ -182,6 +194,26 @@ export class NonoRobotImpl implements NonoRobot {
             "target": tgt,
             "touchType": init.touchType ?? "direct"
         } as Touch));
+
+        // Updating the ongoing touches
+        const eventTargetTouches = this.ongoingtouchevents.get(tgt) ?? new Map<number, Touch>();
+
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        if (params.changedTouches !== undefined) {
+            params.changedTouches.forEach(p => {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                eventTargetTouches.set(p.identifier!, p as Touch);
+            });
+            this.ongoingtouchevents.set(tgt, eventTargetTouches);
+        }
+        // Putting the ongoing touches in the event
+        if (eventTargetTouches.size > 0) {
+            params.targetTouches = [...eventTargetTouches.values()];
+        }
+
+        if (this.ongoingtouchevents.size > 0) {
+            params.touches = [...this.ongoingtouchevents.values()].flatMap(t => [...t.values()]);
+        }
 
         return params as TouchEventInit;
     }
