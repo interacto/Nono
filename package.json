@@ -1,7 +1,7 @@
 {
   "name": "interacto-nono",
   "description": "ノノ -- A fluent API for triggering UI events in TypeScript",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Arnaud Blouin",
   "contributors": [
     "Rémi Daniel"
