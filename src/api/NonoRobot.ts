@@ -116,6 +116,14 @@ export interface NonoRobot {
     keyup(params?: EventTarget | string | (EventTargetInit & KeyboardEventInit)): this;
 
     /**
+     * Sends a serie of keydown+keyup events corresponding to each character of the given text.
+     * Between each character (so between each keydown/keyup) a delay in ms is applied.
+     * @param txt - The text to write.
+     * @param delayms - The delay in ms to apply between each character of the text.
+     */
+    write(txt: string, delayms?: number): this;
+
+    /**
      * A DOM wheel event.
      * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a wheel data object
      * @returns the robot (itself)

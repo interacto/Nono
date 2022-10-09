@@ -337,6 +337,22 @@ export class NonoRobotImpl implements NonoRobot {
         return this.processKeyEvent("keyup", this.processPotentialCssSelector(params));
     }
 
+    public write(txt: string, delayms?: number): this {
+        txt.split("").forEach(char => {
+            this.processKeyEvent("keydown", this.processPotentialCssSelector({
+                "code": char
+            }));
+            this.processKeyEvent("keyup", this.processPotentialCssSelector({
+                "code": char
+            }));
+            if (delayms !== undefined) {
+                setTimeout(() => {
+                }, delayms);
+            }
+        });
+        return this;
+    }
+
     public touchstart(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
                       touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
         return this.processTouchEvent("touchstart", this.processPotentialCssSelector(params), touches, timestamp);

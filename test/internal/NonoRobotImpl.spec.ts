@@ -10,6 +10,11 @@ describe("robot with default event target", () => {
         div = document.createElement("div");
         div2 = document.createElement("div");
         robot = new NonoRobotImpl(div);
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.clearAllTimers();
     });
 
     describe("with mouse events", () => {
@@ -172,6 +177,48 @@ describe("robot with default event target", () => {
             expect(handler).toHaveBeenNthCalledWith(1, expect.objectContaining({
                 "button": 2
             }));
+        });
+
+        test("using keydown", () => {
+            div.addEventListener("keydown", handler);
+
+            robot
+                .keydown({"code": "A"});
+
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        test("using keyup", () => {
+            div.addEventListener("keyup", handler);
+
+            robot
+                .keyup({"code": "A"});
+
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        test("using write", () => {
+            div.addEventListener("keydown", handler);
+            div.addEventListener("keyup", handler2);
+
+            robot
+                .write("fou");
+
+            expect(handler).toHaveBeenCalledTimes(3);
+            expect(handler2).toHaveBeenCalledTimes(3);
+        });
+
+        test("using write with delay", () => {
+            div.addEventListener("keydown", handler);
+            div.addEventListener("keyup", handler2);
+
+            robot
+                .write("fou", 100);
+
+            jest.runAllTimers();
+
+            expect(handler).toHaveBeenCalledTimes(3);
+            expect(handler2).toHaveBeenCalledTimes(3);
         });
     });
 
