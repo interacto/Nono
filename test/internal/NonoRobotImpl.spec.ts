@@ -15,6 +15,7 @@ describe("robot with default event target", () => {
 
     afterEach(() => {
         jest.clearAllTimers();
+        jest.clearAllMocks();
     });
 
     describe("with mouse events", () => {
@@ -231,6 +232,34 @@ describe("robot with default event target", () => {
             handler2 = jest.fn();
             div.addEventListener("touchmove", handler);
             div2.addEventListener("touchmove", handler2);
+        });
+
+        test("on touchend, the touch is removed from the cache", () => {
+            robot
+                .touchmove({}, [
+                    {"identifier": 1, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ])
+                .touchmove({}, [
+                    {"identifier": 2, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ])
+                .touchend({}, [
+                    {"identifier": 1, "screenX": 16, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ])
+                .touchmove({}, [
+                    {"identifier": 2, "screenX": 17, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123}
+                ]);
+
+            expect(handler).toHaveBeenNthCalledWith(3, expect.objectContaining({
+                "targetTouches": [
+                    {"identifier": 2, "screenX": 17, "screenY": 130, "clientX": 140, "clientY": 241, "force": 18, "pageX": 1,
+                        "pageY": 5, "radiusX": 420, "radiusY": 540, "rotationAngle": 64, "altitudeAngle": 112, "azimuthAngle": 123,
+                        "target": div, "touchType": "direct"}
+                ]
+            }));
         });
 
         test("targetTouches and touches attribute filled after several touch events", () => {

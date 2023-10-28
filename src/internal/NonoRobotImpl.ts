@@ -365,7 +365,16 @@ export class NonoRobotImpl implements NonoRobot {
 
     public touchend(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
                     touches?: Array<Partial<TouchInit>>, timestamp?: number): this {
-        return this.processTouchEvent("touchend", this.processPotentialCssSelector(params), touches, timestamp);
+        const res = this.processTouchEvent("touchend", this.processPotentialCssSelector(params), touches, timestamp);
+        // Removing the touches that correspond to the touchend
+        const target = this.currentTarget;
+        if (target !== undefined) {
+            const map = this.ongoingtouchevents.get(target);
+            touches?.map(t => t.identifier ?? -1).forEach(i => {
+                map?.delete(i);
+            });
+        }
+        return res;
     }
 
     public do(fn: () => void): this {
