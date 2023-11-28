@@ -61,6 +61,7 @@ module.exports = {
 
     "tsdoc/syntax": "error",
 
+    "no-duplicate-imports": "off",
     "eslint/default-case": "off",
     "@typescript-eslint/lines-around-comment": "off",
     "@typescript-eslint/max-params": "off",

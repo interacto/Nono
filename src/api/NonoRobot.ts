@@ -183,6 +183,54 @@ export interface NonoRobot {
         moves?: number, params?: EventTarget | string | (EventTargetInit & TouchEventInit)): this;
 
     /**
+     * Performs a pan (two touches).
+     * @param id1 - The touch ID 1
+     * @param id2 - The touch ID 2
+     * @param distance - The distance of the pan. In pixels.
+     * @param pos - The initial positions of the two touches
+     * @param deviation - If you do not want to perform a strictly horizontal (or vertical, etc.) pan,
+     * you can use this argument to vary a little bit the other axis. 0 by default. In pixels.
+     * @param moves - The number of moves to perform. 1 by default.
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a touch data object
+     */
+    twoPan(id1: number, id2: number, distance: number, direction: Direction,
+        deviation?: number, moves?: number, params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+        pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>]): this;
+
+    /**
+     * Performs a pan (three touches).
+     * @param id1 - The touch ID 1
+     * @param id2 - The touch ID 2
+     * @param id3 - The touch ID 3
+     * @param distance - The distance of the pan. In pixels.
+     * @param pos - The initial positions of the three touches
+     * @param deviation - If you do not want to perform a strictly horizontal (or vertical, etc.) pan,
+     * you can use this argument to vary a little bit the other axis. 0 by default. In pixels.
+     * @param moves - The number of moves to perform. 1 by default.
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a touch data object
+     */
+    threePan(id1: number, id2: number, id3: number, distance: number, direction: Direction,
+        deviation?: number, moves?: number, params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+        pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>, p3: Partial<TouchInit>]): this;
+
+    /**
+     * Performs a pan (four touches).
+     * @param id1 - The touch ID 1
+     * @param id2 - The touch ID 2
+     * @param id3 - The touch ID 3
+     * @param id4 - The touch ID 4
+     * @param distance - The distance of the pan. In pixels.
+     * @param pos - The initial positions of the four touches
+     * @param deviation - If you do not want to perform a strictly horizontal (or vertical, etc.) pan,
+     * you can use this argument to vary a little bit the other axis. 0 by default. In pixels.
+     * @param moves - The number of moves to perform. 1 by default.
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a touch data object
+     */
+    fourPan(id1: number, id2: number, id3: number, id4: number, distance: number, direction: Direction,
+        deviation?: number, moves?: number, params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+        pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>, p3: Partial<TouchInit>, p4: Partial<TouchInit>]): this;
+
+    /**
      * A free routine that executes the provided function. Useful to execute something while not stopping the
      * function chaining.
      * @param fn - The function to be called.

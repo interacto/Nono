@@ -15,6 +15,7 @@ import type {Direction, NonoRobot} from "../api/NonoRobot";
 import type {EventTargetInit} from "../api/EventTargetInit";
 
 interface Position {
+    "identifier": number;
     "clientX": number;
     "clientY": number;
     "pageX": number;
@@ -389,10 +390,8 @@ export class NonoRobotImpl implements NonoRobot {
     public pan(touchId: number, distance: number, direction: Direction, startingPosition: Partial<TouchInit>,
                deviation: number = 0, moves: number = 1,
                params?: EventTarget | string | (EventTargetInit & TouchEventInit)): this {
-        const incrementDist = distance / moves;
-        const incrDev = deviation / moves;
-        const finalMoves = Math.floor(Math.max(1, moves));
         const position: Position = {
+            "identifier": touchId,
             "clientX": startingPosition.clientX ?? 0,
             "clientY": startingPosition.clientY ?? 0,
             "pageX": startingPosition.pageX ?? 0,
@@ -400,19 +399,90 @@ export class NonoRobotImpl implements NonoRobot {
             "screenX": startingPosition.screenX ?? 0,
             "screenY": startingPosition.screenY ?? 0
         };
-        let lastPos: Position = position;
+        this.executePans([position], distance, direction, deviation, moves, params);
+        // const incrementDist = distance / moves;
+        // const incrDev = deviation / moves;
+        // const finalMoves = Math.floor(Math.max(1, moves));
+        // const position: Position = {
+        //     "identifier": touchId,
+        //     "clientX": startingPosition.clientX ?? 0,
+        //     "clientY": startingPosition.clientY ?? 0,
+        //     "pageX": startingPosition.pageX ?? 0,
+        //     "pageY": startingPosition.pageY ?? 0,
+        //     "screenX": startingPosition.screenX ?? 0,
+        //     "screenY": startingPosition.screenY ?? 0
+        // };
+        // let lastPos: Position = position;
 
-        this.touchstart(params, [{"identifier": touchId, ...startingPosition}]);
+        // this.touchstart(params, [{"identifier": touchId, ...startingPosition}]);
 
-        for (let i = 0; i < finalMoves; i++) {
-            lastPos = this.newPositionBasedOnDirection(direction, position,
-                Math.floor(incrementDist * (i + 1)), Math.floor(incrDev * (i + 1)));
-            this.touchmove(params, [{"identifier": touchId, ...lastPos}]);
-        }
+        // for (let i = 0; i < finalMoves; i++) {
+        //     lastPos = this.newPositionBasedOnDirection(direction, position,
+        //         Math.floor(incrementDist * (i + 1)), Math.floor(incrDev * (i + 1)));
+        //     this.touchmove(params, [lastPos]);
+        // }
 
-        this.touchend(params, [{"identifier": touchId, ...lastPos}]);
+        // this.touchend(params, [lastPos]);
 
         return this;
+    }
+
+    public twoPan(id1: number, id2: number, distance: number, direction: Direction,
+                  deviation: number = 0, moves: number = 1,
+                  params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                  pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>]): this {
+        const positions: Array<Position> = [this.toDefautPosition(pos?.[0], id1), this.toDefautPosition(pos?.[1], id2)];
+
+        this.executePans(positions, distance, direction, deviation, moves, params);
+
+        return this;
+    }
+
+    public threePan(id1: number, id2: number, id3: number, distance: number, direction: Direction,
+                    deviation: number = 0, moves: number = 1,
+                    params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                    pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>, p3: Partial<TouchInit>]): this {
+        const positions: Array<Position> = [this.toDefautPosition(pos?.[0], id1),
+            this.toDefautPosition(pos?.[1], id2), this.toDefautPosition(pos?.[2], id3)];
+
+        this.executePans(positions, distance, direction, deviation, moves, params);
+
+        return this;
+    }
+
+    public fourPan(id1: number, id2: number, id3: number, id4: number, distance: number, direction: Direction,
+                   deviation: number = 0, moves: number = 1,
+                   params?: EventTarget | string | (EventTargetInit & TouchEventInit),
+                   pos?: [p1: Partial<TouchInit>, p2: Partial<TouchInit>, p3: Partial<TouchInit>, p4: Partial<TouchInit>]): this {
+        const positions: Array<Position> = [this.toDefautPosition(pos?.[0], id1), this.toDefautPosition(pos?.[1], id2),
+            this.toDefautPosition(pos?.[2], id3), this.toDefautPosition(pos?.[3], id4)];
+
+        this.executePans(positions, distance, direction, deviation, moves, params);
+
+        return this;
+    }
+
+    private executePans(pans: Array<Position>, distance: number, direction: Direction, deviation: number, moves: number,
+                        params?: EventTarget | string | (EventTargetInit & TouchEventInit)): void {
+        const incrementDist = Math.floor(distance / moves);
+        const incrDev = Math.floor(deviation / moves);
+        const finalMoves = Math.ceil(Math.max(1, moves));
+        let lastPos = pans;
+
+        for (const pos of lastPos) {
+            this.touchstart(params, [pos]);
+        }
+
+        for (let i = 0; i < finalMoves; i++) {
+            lastPos = lastPos.map(pan => this.newPositionBasedOnDirection(direction, pan, incrementDist, incrDev));
+            for (const pos of lastPos) {
+                this.touchmove(params, [pos]);
+            }
+        }
+
+        for (const pos of pans) {
+            this.touchend(params, [this.newPositionBasedOnDirection(direction, pos, distance, deviation)]);
+        }
     }
 
     public do(fn: () => void): this {
@@ -436,11 +506,23 @@ export class NonoRobotImpl implements NonoRobot {
         return this;
     }
 
+    private toDefautPosition(pos: Partial<TouchInit> | undefined, id: number | undefined): Position {
+        return {
+            "identifier": id ?? 1,
+            "clientX": pos?.clientX ?? 0,
+            "clientY": pos?.clientY ?? 0,
+            "pageX": pos?.pageX ?? 0,
+            "pageY": pos?.pageY ?? 0,
+            "screenX": pos?.screenX ?? 0,
+            "screenY": pos?.screenY ?? 0
+        };
+    }
 
     private newPositionBasedOnDirection(direction: Direction, pos: Position, panIncr: number, devIncr: number): Position {
         switch (direction) {
         case "bottom":
             return {
+                "identifier": pos.identifier,
                 "clientX": pos.clientX + devIncr,
                 "clientY": pos.clientY + panIncr,
                 "pageX": pos.pageX + devIncr,
@@ -450,6 +532,7 @@ export class NonoRobotImpl implements NonoRobot {
             };
         case "top":
             return {
+                "identifier": pos.identifier,
                 "clientX": pos.clientX + devIncr,
                 "clientY": pos.clientY - panIncr,
                 "pageX": pos.pageX + devIncr,
@@ -459,6 +542,7 @@ export class NonoRobotImpl implements NonoRobot {
             };
         case "left":
             return {
+                "identifier": pos.identifier,
                 "clientX": pos.clientX - panIncr,
                 "clientY": pos.clientY + devIncr,
                 "pageX": pos.pageX - panIncr,
@@ -468,6 +552,7 @@ export class NonoRobotImpl implements NonoRobot {
             };
         case "right":
             return {
+                "identifier": pos.identifier,
                 "clientX": pos.clientX + panIncr,
                 "clientY": pos.clientY + devIncr,
                 "pageX": pos.pageX + panIncr,
