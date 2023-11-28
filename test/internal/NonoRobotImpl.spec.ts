@@ -2,8 +2,8 @@ import type {NonoRobot} from "../../src/nono";
 import {NonoRobotImpl} from "../../src/nono";
 
 let robot: NonoRobot;
-let div: Element;
-let div2: Element;
+let div: HTMLDivElement;
+let div2: HTMLDivElement;
 
 describe("robot with default event target", () => {
     beforeEach(() => {
@@ -19,8 +19,8 @@ describe("robot with default event target", () => {
     });
 
     describe("with mouse events", () => {
-        let handler: (_: MouseEvent) => void;
-        let handler2: (_: MouseEvent) => void;
+        let handler: () => void;
+        let handler2: () => void;
 
         beforeEach(() => {
             handler = jest.fn();
@@ -224,8 +224,8 @@ describe("robot with default event target", () => {
     });
 
     describe("with touch events", () => {
-        let handler: (_: TouchEvent) => void;
-        let handler2: (_: TouchEvent) => void;
+        let handler: () => void;
+        let handler2: () => void;
 
         beforeEach(() => {
             handler = jest.fn();
@@ -509,11 +509,40 @@ describe("robot with default event target", () => {
             }));
         });
     });
+
+    describe("with pans", () => {
+        let handlerStart: () => void;
+        let handlerMove: () => void;
+        let handlerEnd: () => void;
+
+        beforeEach(() => {
+            handlerStart = jest.fn();
+            handlerMove = jest.fn();
+            handlerEnd = jest.fn();
+            div.addEventListener("touchstart", handlerStart);
+            div.addEventListener("touchmove", handlerMove);
+            div.addEventListener("touchend", handlerEnd);
+        });
+
+        test("correct events produced", () => {
+            robot.pan(1, 100, "right", {});
+            expect(handlerStart).toHaveBeenCalledTimes(1);
+            expect(handlerEnd).toHaveBeenCalledTimes(1);
+            expect(handlerMove).toHaveBeenCalledTimes(1);
+        });
+
+        test("correct events produced with several steps", () => {
+            robot.pan(1, 100, "right", {}, 0, 10);
+            expect(handlerStart).toHaveBeenCalledTimes(1);
+            expect(handlerEnd).toHaveBeenCalledTimes(1);
+            expect(handlerMove).toHaveBeenCalledTimes(10);
+        });
+    });
 });
 
 
 describe("robot using css selector", () => {
-    let handler: (_: MouseEvent) => void;
+    let handler: () => void;
 
     beforeEach(() => {
         document.documentElement.innerHTML = "<html><div id='myid'></div></html>";
@@ -521,6 +550,10 @@ describe("robot using css selector", () => {
         div = document.querySelector("div")!;
         handler = jest.fn();
         div.addEventListener("click", handler);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     test("with a tag name", () => {

@@ -11,8 +11,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Interacto.  If not, see <https://www.gnu.org/licenses/>.
  */
-import type {NonoRobot} from "../api/NonoRobot";
+import type {Direction, NonoRobot} from "../api/NonoRobot";
 import type {EventTargetInit} from "../api/EventTargetInit";
+
+interface Position {
+    "clientX": number;
+    "clientY": number;
+    "pageX": number;
+    "pageY": number;
+    "screenX": number;
+    "screenY": number;
+}
 
 interface PartialTouchEventInit extends EventModifierInit {
     changedTouches?: Array<Partial<TouchInit>>;
@@ -377,6 +386,35 @@ export class NonoRobotImpl implements NonoRobot {
         return res;
     }
 
+    public pan(touchId: number, distance: number, direction: Direction, startingPosition: Partial<TouchInit>,
+               deviation: number = 0, moves: number = 1,
+               params?: EventTarget | string | (EventTargetInit & TouchEventInit)): this {
+        const incrementDist = distance / moves;
+        const incrDev = deviation / moves;
+        const finalMoves = Math.floor(Math.max(1, moves));
+        const position: Position = {
+            "clientX": startingPosition.clientX ?? 0,
+            "clientY": startingPosition.clientY ?? 0,
+            "pageX": startingPosition.pageX ?? 0,
+            "pageY": startingPosition.pageY ?? 0,
+            "screenX": startingPosition.screenX ?? 0,
+            "screenY": startingPosition.screenY ?? 0
+        };
+        let lastPos: Position = position;
+
+        this.touchstart(params, [{"identifier": touchId, ...startingPosition}]);
+
+        for (let i = 0; i < finalMoves; i++) {
+            lastPos = this.newPositionBasedOnDirection(direction, position,
+                Math.floor(incrementDist * (i + 1)), Math.floor(incrDev * (i + 1)));
+            this.touchmove(params, [{"identifier": touchId, ...lastPos}]);
+        }
+
+        this.touchend(params, [{"identifier": touchId, ...lastPos}]);
+
+        return this;
+    }
+
     public do(fn: () => void): this {
         fn();
         return this;
@@ -396,6 +434,50 @@ export class NonoRobotImpl implements NonoRobot {
         this.currentUIEventData = undefined;
         this.currentChangeData = undefined;
         return this;
+    }
+
+
+    private newPositionBasedOnDirection(direction: Direction, pos: Position, panIncr: number, devIncr: number): Position {
+        switch (direction) {
+        case "bottom":
+            return {
+                "clientX": pos.clientX + devIncr,
+                "clientY": pos.clientY + panIncr,
+                "pageX": pos.pageX + devIncr,
+                "pageY": pos.pageY + panIncr,
+                "screenX": pos.screenX + devIncr,
+                "screenY": pos.screenY + panIncr
+            };
+        case "top":
+            return {
+                "clientX": pos.clientX + devIncr,
+                "clientY": pos.clientY - panIncr,
+                "pageX": pos.pageX + devIncr,
+                "pageY": pos.pageY - panIncr,
+                "screenX": pos.screenX + devIncr,
+                "screenY": pos.screenY - panIncr
+            };
+        case "left":
+            return {
+                "clientX": pos.clientX - panIncr,
+                "clientY": pos.clientY + devIncr,
+                "pageX": pos.pageX - panIncr,
+                "pageY": pos.pageY + devIncr,
+                "screenX": pos.screenX - panIncr,
+                "screenY": pos.screenY + devIncr
+            };
+        case "right":
+            return {
+                "clientX": pos.clientX + panIncr,
+                "clientY": pos.clientY + devIncr,
+                "pageX": pos.pageX + panIncr,
+                "pageY": pos.pageY + devIncr,
+                "screenX": pos.screenX + panIncr,
+                "screenY": pos.screenY + devIncr
+            };
+        default:
+            return pos;
+        }
     }
 }
 

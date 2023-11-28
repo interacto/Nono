@@ -14,6 +14,8 @@
 
 import type {EventTargetInit} from "./EventTargetInit";
 
+export type Direction = "bottom" | "left" | "right" | "top";
+
 export interface NonoRobot {
     /**
      * A mousedown DOM UI event.
@@ -166,6 +168,19 @@ export interface NonoRobot {
      */
     touchend(params?: EventTarget | string | (EventTargetInit & TouchEventInit),
         touches?: Array<Partial<TouchInit>>, timestamp?: number): this;
+
+    /**
+     * Performs a pan (one-touch).
+     * @param touchId - The touch ID
+     * @param distance - The distance of the pan. In pixels.
+     * @param startingPosition - The initial position of the pan.
+     * @param deviation - If you do not want to perform a strictly horizontal (or vertical, etc.) pan,
+     * you can use this argument to vary a little bit the other axis. 0 by default. In pixels.
+     * @param moves - The number of moves to perform. 1 by default.
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a touch data object
+     */
+    pan(touchId: number, distance: number, direction: Direction, startingPosition: Partial<TouchInit>, deviation?: number,
+        moves?: number, params?: EventTarget | string | (EventTargetInit & TouchEventInit)): this;
 
     /**
      * A free routine that executes the provided function. Useful to execute something while not stopping the
