@@ -15,7 +15,14 @@
     "noImplicitReturns": true,
     "declaration": true,
     "noImplicitOverride": true,
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "strict": true
   },
   "include": [
     "src/**/*"
