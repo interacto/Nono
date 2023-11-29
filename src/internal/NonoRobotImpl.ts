@@ -400,29 +400,6 @@ export class NonoRobotImpl implements NonoRobot {
             "screenY": startingPosition.screenY ?? 0
         };
         this.executePans([position], distance, direction, deviation, moves, params);
-        // const incrementDist = distance / moves;
-        // const incrDev = deviation / moves;
-        // const finalMoves = Math.floor(Math.max(1, moves));
-        // const position: Position = {
-        //     "identifier": touchId,
-        //     "clientX": startingPosition.clientX ?? 0,
-        //     "clientY": startingPosition.clientY ?? 0,
-        //     "pageX": startingPosition.pageX ?? 0,
-        //     "pageY": startingPosition.pageY ?? 0,
-        //     "screenX": startingPosition.screenX ?? 0,
-        //     "screenY": startingPosition.screenY ?? 0
-        // };
-        // let lastPos: Position = position;
-
-        // this.touchstart(params, [{"identifier": touchId, ...startingPosition}]);
-
-        // for (let i = 0; i < finalMoves; i++) {
-        //     lastPos = this.newPositionBasedOnDirection(direction, position,
-        //         Math.floor(incrementDist * (i + 1)), Math.floor(incrDev * (i + 1)));
-        //     this.touchmove(params, [lastPos]);
-        // }
-
-        // this.touchend(params, [lastPos]);
 
         return this;
     }
