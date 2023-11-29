@@ -1,7 +1,7 @@
 
 # ノノ
 
-It's me ノノ small robot you know, friends of user interfaces. 
+It's me ノノ small robot you know, friends of user interfaces.
 
 
 
@@ -38,6 +38,16 @@ robot("#mydiv")
 ```ts
 robot()
     .click({"target": canvas, "button": 1, "screenX": 111, "screenY": 222, "clientX": 11, "clientY": 22});
+```
+
+```ts
+robot(canvas)
+    .pan(2, 10, "right", {}, 11);
+```
+
+```ts
+robot(canvas)
+    .twoPan(1, 3, 10, "bottom");
 ```
 
 ```ts
