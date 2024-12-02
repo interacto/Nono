@@ -19,14 +19,14 @@ export type Direction = "bottom" | "left" | "right" | "top";
 export interface NonoRobot {
     /**
      * A mousedown DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mousedown(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseclick DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @param count - The number of clicks to perform (one click if not specified)
      * @returns the robot (itself)
      */
@@ -34,14 +34,14 @@ export interface NonoRobot {
 
     /**
      * A dblclick DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * An auxclick DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @param count - The number of clicks to perform (one click if not specified)
      * @returns the robot (itself)
      */
@@ -49,42 +49,42 @@ export interface NonoRobot {
 
     /**
      * A mousemove DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mousemove(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseup DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mouseup(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseover DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mouseover(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseout DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mouseout(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseenter DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mouseenter(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
 
     /**
      * A mouseleave DOM UI event.
-     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or an mouse event data object
+     * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @returns the robot (itself)
      */
     mouseleave(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
