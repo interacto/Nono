@@ -21,12 +21,18 @@ describe("robot with default event target", () => {
     describe("with mouse events", () => {
         let handler: () => void;
         let handler2: () => void;
+        let downHandler: () => void;
+        let upHandler: () => void;
 
         beforeEach(() => {
             handler = jest.fn();
             handler2 = jest.fn();
+            downHandler = jest.fn();
+            upHandler = jest.fn();
             div.addEventListener("click", handler);
             div2.addEventListener("click", handler2);
+            div.addEventListener("mousedown", downHandler);
+            div.addEventListener("mouseup", upHandler);
         });
 
         test("single click works", () => {
@@ -35,6 +41,20 @@ describe("robot with default event target", () => {
             expect(handler).toHaveBeenCalledTimes(1);
             expect(handler).toHaveBeenNthCalledWith(1, expect.objectContaining({
                 "button": 2
+            }));
+        });
+
+        test("single click with mousedown mouseup works", () => {
+            robot.click({"button": 3}, 1, false);
+
+            expect(handler).not.toHaveBeenCalled();
+            expect(downHandler).toHaveBeenCalledTimes(1);
+            expect(upHandler).toHaveBeenCalledTimes(1);
+            expect(downHandler).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "button": 3
+            }));
+            expect(upHandler).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                "button": 3
             }));
         });
 

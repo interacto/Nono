@@ -244,15 +244,28 @@ export class NonoRobotImpl implements NonoRobot {
         return params as TouchEventInit;
     }
 
-    public click(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count: number = 1): this {
-        for (let i = 0; i < count; i++) {
-            this.processMouseEvent("click", this.processPotentialCssSelector(params));
+    public click(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count: number = 1, usingClick = true): this {
+        if(usingClick) {
+            for (let i = 0; i < count; i++) {
+                this.processMouseEvent("click", this.processPotentialCssSelector(params));
+            }
+        }else {
+            for (let i = 0; i < count; i++) {
+                this.processMouseEvent("mousedown", this.processPotentialCssSelector(params));
+                this.processMouseEvent("mouseup", this.processPotentialCssSelector(params));
+            }
         }
         return this;
     }
 
-    public dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this {
-        return this.processMouseEvent("dblclick", this.processPotentialCssSelector(params));
+    public dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit), usingDblClick = true): this {
+        if (usingDblClick) {
+            this.processMouseEvent("dblclick", this.processPotentialCssSelector(params));
+        }else {
+            this.click(params, 2, usingDblClick);
+        }
+
+        return this;
     }
 
     public auxclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count: number = 1): this {

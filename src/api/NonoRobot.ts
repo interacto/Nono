@@ -28,16 +28,18 @@ export interface NonoRobot {
      * A mouseclick DOM UI event.
      * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
      * @param count - The number of clicks to perform (one click if not specified)
+     * @param usingClick - If false, mouseDown and mouseUp events are used. If true, the classical click event is used
      * @returns the robot (itself)
      */
-    click(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count?: number): this;
+    click(params?: EventTarget | string | (EventTargetInit & MouseEventInit), count?: number, usingClick?: boolean): this;
 
     /**
      * A dblclick DOM UI event.
      * @param params - The targeted DOM objects, a css selector, or an EventTargetInit object or a mouse event data object
+     * @param usingDblClick - If false, mouseDown and mouseUp events are used. If true, the classical dblclick event is used
      * @returns the robot (itself)
      */
-    dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit)): this;
+    dblclick(params?: EventTarget | string | (EventTargetInit & MouseEventInit), usingDblClick?: boolean): this;
 
     /**
      * An auxclick DOM UI event.
